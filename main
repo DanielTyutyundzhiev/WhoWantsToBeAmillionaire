@@ -1,0 +1,596 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+ 
+struct node
+{
+    char question[50];
+    char a[30];
+    char b[30];
+    char c[30];
+    char d[30];
+    int answer;
+    char date[11];
+    char author[20];
+    int levelOfDiff;
+    struct node* nextNode;
+};typedef struct node node;
+void readFormFile();
+node *readNodeFromFile(FILE *f);
+char isValidDate(const char *date);
+void saveToFile();
+void deleteList();
+void generateRandomInt(int min, int max,int count);
+node *newNode, *prev, *temp, *t;
+node *head=NULL, *last=NULL;
+void clearConsole();
+node *createNode(char question[],char a[],char b[],char c[],char d[],int answer,char date[],char author[],int levelOfDiff)
+{
+    newNode=(node*)malloc(sizeof(node));
+    if(newNode==NULL)
+    {
+        printf("Memory allocation failed\n");
+        return 1;
+    }
+    else
+    {   strcpy(newNode->question,question);
+        strcpy(newNode->a,a);
+        strcpy(newNode->b,b);
+        strcpy(newNode->c,c);
+        strcpy(newNode->d,d);
+        newNode->answer=answer;
+        strcpy(newNode->date,date);
+        strcpy(newNode->author,author);
+        newNode->levelOfDiff=levelOfDiff;
+        newNode->nextNode=NULL;
+        return newNode;
+    }
+}
+ 
+void* addNode()
+{   char vupros[50];
+    char edno[30];
+    char dve[30];
+    char tri[30];
+    char chetiri[30];
+    int otgovor;
+    char data[11];
+    char avtor[20];
+    int nivoNaTrudnost;
+    char name[16];
+     printf("---------------------------------------------------------------------------------------");
+    printf("\nEnter question :\n");
+    fflush(stdin);
+    scanf(" %[^\n]s", vupros);
+    printf("Enter question answer a :\n");
+    fflush(stdin);
+    scanf("%[^\n]s", edno);
+    printf("Enter question answer b:\n");
+    fflush(stdin);
+    scanf("%[^\n]s", dve);
+    printf("Enter question c:\n");
+    fflush(stdin);
+    scanf("%[^\n]s", tri);
+    printf("Enter question d:\n");
+    fflush(stdin);
+    scanf("%[^\n]s", chetiri);
+    printf("Enter correct answer number (1-4) :\n");
+    fflush(stdin);
+    scanf("%d", &otgovor);
+    while(otgovor<0||otgovor>4)
+    {
+        printf("Try again");
+        fflush(stdin);
+        scanf("%d", &otgovor);
+    }
+    printf("Enter the date of adding(DD.MM.YYYY) :\n");
+    fflush(stdin);
+    scanf("%[^\n]s", data);
+    while(isValidDate(data)!=1)
+    {
+        printf("Enter the date of adding(DD.MM.YYYY) :\n");
+        fflush(stdin);
+        scanf("%[^\n]s", data);
+    }
+ 
+    printf("Enter author :\n");
+    fflush(stdin);
+    scanf("%[^\n]s", avtor);
+ 
+    printf("Enter level of difficulty(0-2):\n");
+    fflush(stdin);
+    scanf("%d", &nivoNaTrudnost);
+    while(nivoNaTrudnost<0||nivoNaTrudnost>2)
+    {
+        printf("Try again");
+        fflush(stdin);
+        scanf("%d", &nivoNaTrudnost);
+    }
+    fflush(stdin);
+    newNode = createNode(vupros,edno,dve,tri,chetiri,otgovor,data,avtor,nivoNaTrudnost);
+    if(head==last && last==NULL)
+    {
+        head=last=newNode;
+        head->nextNode=NULL;
+        last->nextNode=NULL;
+    }
+    else
+    {
+        last->nextNode = newNode;
+        last = newNode;
+        last->nextNode = NULL;
+    }
+    system("cls");
+}
+ 
+void displayList()
+{
+    t=head;
+    if(head==NULL)
+    {
+        printf("Empty list. Nothing to show.\n");
+    }
+    else
+    {
+        while(t)
+        {
+            printf("\n%s\n",t->question);
+            printf("a) %s\n",t->a);
+            printf("b) %s\n",t->b);
+            printf("c) %s\n",t->c);
+            printf("d) %s\n",t->d);
+            printf("correct answer: %d\n",t->answer);
+            t=t->nextNode;
+        }
+    }
+ 
+}
+ 
+void deleteNode()
+{
+    int pos, cnt = 0, i;
+    if(head==NULL)
+    {
+        printf("Empty list. Nothing to show.\n");
+    }
+    else
+    {
+        printf("Enter the question you wish to delete: " );
+        scanf("%d",&pos);
+        t=head;
+        while(t!=NULL)
+            {
+                t=t->nextNode;
+                cnt+=1;
+            }
+        t=head;
+        if(pos==1)
+        {
+            head=t->nextNode;
+            free(t);
+        }
+        else if(pos==cnt)
+        {
+                while(t->nextNode!=NULL)
+                {
+                    prev=t;
+ 
+                    t=t->nextNode;
+                }
+                prev->nextNode=NULL;
+                last=prev;
+                free(t);
+        }
+        else
+        {
+            if(pos>0&&pos<=cnt)
+            {
+                t=head;
+                for(i=1;i<pos;i++)
+                {
+                    prev=t;
+                    t=t->nextNode;
+                }
+                prev->nextNode=t->nextNode;
+            }
+            else
+            {
+                printf("Not in the list.");
+            }
+            free(t);
+        }
+    }
+}
+ 
+int main()
+{
+    int n,choice,n1,n2;
+    FILE *fp;
+    int count1=0,count2=0,questionToDelete;
+    int otgovor;
+    int cnt5=0,cnt=0,count33=0;
+    while(1)
+    {
+count1=0;
+count2=0;
+count33=0;
+questionToDelete;
+otgovor;
+     cnt5=0,cnt=0,count33;
+        printf("\n1.Play\n2.Edit\n3.Exit\n");
+        scanf("%d",&n1);
+        if(n1==1)
+        {
+            readFormFile0();
+            t=head;
+            while(t!=NULL)
+            {   count1++;
+                t=t->nextNode;
+ 
+            }
+            printf("\n%d\n",count1);
+            questionToDelete=count1-5;
+            printf("Questions to delete %d\n",questionToDelete);
+            generateRandomInt(1, count1,questionToDelete);
+            t=head;
+            while(t)
+            {
+                printf("\n%s\n",t->question);
+                printf("a) %s\n",t->a);
+                printf("b) %s\n",t->b);
+                printf("c) %s\n",t->c);
+                printf("d) %s\n",t->d);
+                printf("Enter you answer (1-4):\n");
+                scanf("\n%d", &otgovor);
+                if(otgovor!=t->answer){
+                printf("You Lost!\n");
+                deleteList();
+                break;}
+                    t=t->nextNode;
+                    cnt++;
+ 
+            }
+ 
+            if(cnt==5)
+            {   deleteList();
+                readFormFile1();
+                t=head;
+            while(t!=NULL)
+            {   count2+=1;
+                t=t->nextNode;
+ 
+            }
+            printf("\n%d\n",count2);
+            questionToDelete=count2-5;
+            printf("\n%d Questions to delete\n",questionToDelete);
+            generateRandomInt(1, count2,questionToDelete);
+            t=head;
+            while(t)
+            {
+                printf("\n%s\n",t->question);
+                printf("a) %s\n",t->a);
+                printf("b) %s\n",t->b);
+                printf("c) %s\n",t->c);
+                printf("d) %s\n",t->d);
+                printf("Enter you answer (1-4):\n");
+                scanf("\n%d", &otgovor);
+                if(otgovor!=t->answer){
+                printf("You Lost!\n");
+                    break;}
+                    t=t->nextNode;
+                    cnt++;
+            }
+            }
+            if(cnt==10)
+            {   deleteList();
+                readFormFile2();
+            t=head;
+            while(t!=NULL)
+            {   count33++;
+                t=t->nextNode;
+            }
+            printf("\n%d\n",count33);
+            questionToDelete=count33-5;
+            printf("\n%d Questions to delete\n",questionToDelete);
+            generateRandomInt(1, count33,questionToDelete);
+            t=head;
+            while(t)
+            {
+                printf("\n%s\n",t->question);
+                printf("a) %s\n",t->a);
+                printf("b) %s\n",t->b);
+                printf("c) %s\n",t->c);
+                printf("d) %s\n",t->d);
+                printf("Enter you answer (1-4):\n");
+                scanf("\n%d", &otgovor);
+                if(otgovor!=t->answer){
+                printf("You Lost!\n");
+                    break;}
+                    t=t->nextNode;
+                    cnt++;
+ 
+            }
+            }
+            if(cnt==15)
+            {
+                printf("You win!");
+            }
+ 
+        }
+ 
+ 
+      else  if(n1==2)
+        {
+           printf("\n1.Add Question\n2.Load from file\n3.Save File\n4.Print List\n5.Delete Question from list\n6.Exit\n");
+           scanf("%d",&choice);
+           if(choice==6)
+           {
+               printf("\nExiting...\n");
+               break;
+           }else if(choice==5)
+           {
+ 
+                deleteNode();
+           }
+ 
+           else if(choice==1)
+           {
+               addNode();
+ 
+           }
+           else if(choice==2)
+           {    printf("\n0.Easy Questions\n1.Medium Questions\n2.Hard Questions");
+                scanf("%d",&n2);
+                if(n2==0){
+                readFormFile0();
+                displayList();}
+                else if(n2==1){
+                readFormFile1();
+                displayList();}
+                else if(n2==2){
+                readFormFile2();
+                displayList();}
+           }
+           else if(choice==3)
+           {
+               saveToFile();
+           }
+           else if(choice==4)
+           {
+               displayList();
+           }
+ 
+        }
+ 
+        }
+        return 0;
+    }
+char isValidDate(const char *date) {
+    if (date[10] != '\0') return 0;
+    if (date[0] > '3' || date[0] < '0') return 0;
+    if ((date[0] == '1' || date[0] == '2') && (date[1] > '9' || date[1] < '0')) return 0;
+    if ((date[0] == '3') && (date[1] > '1' || date[1] < '0')) return 0;
+    if (date[2] != '.') return 0;
+    if (date[3] > '1' || date[3] < '0') return 0;
+    if (date[3] == '0' && (date[4] < '0' || date[4] > '9')) return 0;
+    if (date[3] == '1' && (date[4] < '0' || date[4] > '2')) return 0;
+    if (date[3] == '1' && (date[4] < '0' || date[4] > '2')) return 0;
+    if (date[5] != '.') return 0;
+    if (date[6] > '2' || date[6] < '1') return 0;
+    if (date[6] == '1' && date[7] != '9') return 0;
+    if (date[6] == '2' && date[7] != '0') return 0;
+    if (date[8] < '0' || date[8] > '9') return 0;
+    if (date[9] < '0' || date[9] > '9') return 0;
+ 
+    return 1;
+}
+ 
+ 
+void deleteList()
+{
+    temp=head;
+    node *next;
+    while(temp!=NULL)
+    {
+        next=temp->nextNode;
+        free(temp);
+        temp=next;
+    }
+    head=NULL;
+}
+ 
+void saveToFile()
+{
+    FILE *f0,*f1,*f2;
+ 
+    f0=fopen("EasyQuestions","ab");//ab to keep adding to the file
+    f1=fopen("MediumQuestions","ab");
+    f2=fopen("HardQuestions","ab");
+ 
+    if(f0!=NULL&&f1!=NULL&&f2!=NULL)
+    {
+        temp=head;
+        node *holdNext=NULL;        //holdnext holds next pointer to keep the integrity of list
+ 
+        while(temp!=NULL)           //goes through the list
+        {
+            holdNext=temp->nextNode;    // disconnect from linked list
+            temp->nextNode=NULL;
+            if(temp->levelOfDiff==0)
+            {
+                fseek(f0,0,SEEK_END);   //gets to the end of the file so it adds the question at the end
+            fwrite(temp,sizeof(node),1,f0); //saves question to the file
+            }
+           else if(temp->levelOfDiff==1)
+            {
+                fseek(f1,0,SEEK_END);
+            fwrite(temp,sizeof(node),1,f1);
+            }
+           else if(temp->levelOfDiff==2 )
+            {
+                fseek(f2,0,SEEK_END);
+            fwrite(temp,sizeof(node),1,f2);
+            }
+ 
+            temp->nextNode=holdNext;    //keep integrity of List
+            holdNext=NULL;
+ 
+            temp=temp->nextNode;
+        }
+        fclose(f0);
+        fclose(f1);
+        fclose(f2);
+    }
+    else
+    {
+        printf("Error opening file");
+    }
+}
+ 
+node *readNodeFromFile(FILE *f)
+{
+    size_t returnVal;
+    if(head==NULL)
+    {
+        head=(node*)malloc(sizeof(node));
+        returnVal=fread(head,sizeof(node),1,f);
+        last=head;
+        head->nextNode=NULL;
+        last->nextNode=NULL;
+    }
+    else
+    {
+        node *readNode=(node*)malloc(sizeof(node));
+        returnVal=fread(readNode,sizeof(node),1,f);
+        last->nextNode=readNode;
+        last=readNode;
+        last->nextNode=NULL;
+    }
+    return head;
+}
+void readFormFile2()
+{
+    FILE *f=fopen("HardQuestions","rb");
+    if(f!=NULL)
+    {
+        deleteList();
+        head=NULL;
+        fseek(f,0,SEEK_END);
+        long fileSize=ftell(f);
+        rewind(f);
+ 
+        int nodesInFile=(int)(fileSize/(sizeof(node)));
+ 
+        printf("\nAmount of entries: %d",nodesInFile);
+ 
+        int i=0;
+        for(i=0;i<nodesInFile;i++)
+        {
+            fseek(f,(sizeof(node)*i),SEEK_SET);
+            head=readNodeFromFile(f);
+        }
+        fclose(f);
+    }
+    else
+    {
+      printf("Error opening file");
+    }
+ 
+}
+void readFormFile1() //function that loads medium questions
+{
+    FILE *f=fopen("MediumQuestions","rb");
+    if(f!=NULL)
+    {
+        deleteList();
+        head=NULL;
+        fseek(f,0,SEEK_END);
+        long fileSize=ftell(f);
+        rewind(f);
+ 
+        int nodesInFile=(int)(fileSize/(sizeof(node)));
+ 
+        printf("\nAmount of entries: %d",nodesInFile);
+ 
+        int i=0;
+        for(i=0;i<nodesInFile;i++)
+        {
+            fseek(f,(sizeof(node)*i),SEEK_SET);
+            head=readNodeFromFile(f);
+        }
+        fclose(f);
+    }
+    else
+    {
+      printf("Error opening file");
+    }
+ 
+}
+void readFormFile0()   //function that loads easy questions
+{
+    FILE *f=fopen("EasyQuestions","rb"); //opens a file to read
+    if(f!=NULL)                          //checks if the file is open correctly
+    {
+        deleteList();                   //cleans up the list and head of list
+        head=NULL;
+        fseek(f,0,SEEK_END);            //gets to the end of file
+        long fileSize=ftell(f);         //ftell gives file size
+        rewind(f);                      // back to the beginning of file
+ 
+        int nodesInFile=(int)(fileSize/(sizeof(node)));
+ 
+        printf("\nAmount of entries: %d",nodesInFile);
+ 
+        int i=0;
+        for(i=0;i<nodesInFile;i++)
+        {
+            fseek(f,(sizeof(node)*i),SEEK_SET);
+            head=readNodeFromFile(f);
+        }
+        fclose(f);
+    }
+    else
+    {
+      printf("Error opening file");
+    }
+ 
+}
+void generateRandomInt(int min, int max,int count) {    //min=1 always, max=number of structs loaded count=max-5
+    int pos,j;
+    time_t t1;
+    srand((unsigned) time(&t1));
+ 
+     for(int i=0;i<count;i++)                  // deletes count amnt of questions in order to be 5 left all the time
+     {
+         pos=rand() % (max - min + 1) + min;  //gives a random position to be deleted
+         t=head;
+         if(pos==1)     //deletes at all possible positions
+         {
+             head=head->nextNode;
+             free(t);
+         }
+         else if(pos==max)
+         {
+             while(t!=NULL)
+             {   prev=t;
+                 t=t->nextNode;
+ 
+             }
+             prev->nextNode=NULL;
+             free(t);
+             last=prev;
+         }
+         else{
+              for(j=0;j<pos;j++)
+              {    prev=t;
+                  t=t->nextNode;
+ 
+              }
+              prev->nextNode=t->nextNode;
+              free(t);
+ 
+         }
+         max-=1;                            //max gets decremented so rand doesn't give a number outside of range
+     }
+ 
+}
